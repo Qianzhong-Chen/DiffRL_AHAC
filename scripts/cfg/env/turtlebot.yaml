@@ -1,0 +1,99 @@
+name: df_turtlebot
+config:
+  _target_: dflex.envs.TurtlebotEnv
+  render: ${general.render}
+  device: ${general.device}
+  num_envs: 128
+  # stochastic_env: True
+  # stochastic_init: True
+  no_grad: ??? # decided based on algorithm
+  episode_length: 1000
+  MM_caching_frequency: 16
+  # early_termination: True
+  # termination_height: 0.27
+  # action_penalty: 0.0
+  # joint_vel_obs_scaling: 0.1
+  # up_rew_scale: 0.1
+
+shac:
+  actor_lr: 2e-3
+  critic_lr: 5e-4
+  max_epochs: 2000
+  save_interval: 400
+  target_critic_alpha: 0.99
+  actor_mlp:
+    units: [400, 200, 100]
+  critic_mlp:
+    units: [400, 200, 100]
+
+ppo:
+  max_epochs: 50000
+  lr: 5e-4
+  minibatch_size: 16384
+  num_actors: 2048
+  horizon_length: 32
+  save_frequency: 500
+  save_best_after: 500
+  actor_mlp:
+    units: [400, 200, 100]
+
+sac:
+  max_epochs: 5000
+  batch_size: 4096
+  num_actors: 128
+  save_frequency: 500
+  save_best_after: 500
+  actor_critic_mlp:
+    units: [128, 64, 32]
+
+# Note SVG doesn't like floats so we use ints
+svg:
+  num_train_steps: 11000000 # 11M
+  replay_buffer_capacity: 1000000
+
+
+################################ shac project config ###################
+# params:  
+#   diff_env:
+#     name: TurtlebotEnv
+#     stochastic_env: True
+#     episode_length: 1000
+#     MM_caching_frequency: 16
+
+#   network:
+#     actor: ActorStochasticMLP #ActorDeterministicMLP
+#     actor_mlp:
+#       units: [128, 64, 32]
+#       activation: elu
+
+#     critic: CriticMLP
+#     critic_mlp:
+#       units: [64, 64]
+#       activation: elu
+
+#   config:
+#     name: df_turtlebot_shac
+#     actor_learning_rate: 1e-3 # adam
+#     critic_learning_rate: 1e-3 # adam
+#     lr_schedule: linear # ['constant', 'linear']
+#     target_critic_alpha: 0.2
+#     obs_rms: True
+#     ret_rms: False
+#     critic_iterations: 16
+#     critic_method: td-lambda # ['td-lambda', 'one-step']
+#     lambda: 0.95
+#     num_batch: 4
+#     gamma: 0.99
+#     betas: [0.7, 0.95] # adam
+#     max_epochs: 2000 # total training iterations
+#     steps_num: 32
+#     grad_norm: 1.0
+#     truncate_grads: True
+#     num_actors: 512
+#     save_interval: 100
+
+#     player:
+#       determenistic: True
+#       games_num: 1
+#       num_actors: 1
+#       print_stats: True

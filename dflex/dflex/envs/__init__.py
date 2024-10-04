@@ -14,3 +14,5 @@ from .hopper import HopperEnv
 from .humanoid import HumanoidEnv
 from .snu_humanoid import SNUHumanoidEnv
 from .double_pendulum import DoublePendulumEnv
+from .turtlebot import TurtlebotEnv
+# from .turtlebot_nerf import TurtlebotNerfEnv
