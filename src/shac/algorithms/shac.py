@@ -315,6 +315,11 @@ class SHAC:
 
             real_obs = info["obs_before_reset"]
 
+            # TODO: ugly fix of nan issue
+            zero_tensor = torch.tensor(0.0, dtype=real_obs.dtype, device=real_obs.device)
+            # Replace NaN values with 0.0
+            real_obs = torch.where(torch.isnan(real_obs), zero_tensor, real_obs)
+
             # sanity check
             if (~torch.isfinite(real_obs)).sum() > 0:
                 print_error("Got inf obs")

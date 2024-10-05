@@ -192,6 +192,8 @@ class DFlexEnv:
             self.MM_caching_frequency,
         )
 
+       
+
         # compute dynamics jacobians if requested
         if self.jacobian and not play:
             inputs = torch.cat((self.obs_buf.clone(), unscaled_actions.clone()), dim=1)

@@ -65,7 +65,7 @@ class TurtlebotEnv(DFlexEnv):
             contact_ke=4.0e4,
             contact_kd=None,  #  1.0e4,
             logdir=None,
-            nan_state_fix=False,
+            nan_state_fix=True,
             jacobian_norm=None,
             termination_height=0.27,
             action_penalty=0.0,
@@ -502,7 +502,7 @@ class TurtlebotEnv(DFlexEnv):
         #                         self.actions.clone()], # 19:21
         #                         dim = -1)
 
-        return torch.cat(
+        obs_buf = torch.cat(
             [
                 torso_pos[:, :], # 0:3 
                 torso_rot, # 3:7
@@ -512,20 +512,21 @@ class TurtlebotEnv(DFlexEnv):
                 self.joint_vel_obs_scaling * state.joint_qd.view(self.num_envs, -1)[:, 6:], # 15:17
                 up_vec[:, 1:2], # 17
                 (heading_vec * target_dirs).sum(dim = -1).unsqueeze(-1), # 18
-                action.clone() # 19:21
+                action[:, 6:].clone() # 19:21
             ], 
             dim = -1)
+        return obs_buf
 
         
         # pdb.set_trace()
 
-    def calculateReward(self, obs, act):
+    def calculate_reward(self, obs, act):
         up_reward = self.up_strength * obs[:, 17]
         heading_reward = self.heading_strength * obs[:, 18]
         # height_reward = obs[:, 0] - self.termination_height
         lin_vel_reward = self.lin_strength * torch.linalg.norm(obs[:, 7:10], dim=1) 
         ang_vel_penalty = torch.linalg.norm(obs[:, 10:13], dim=1) * self.ang_penalty
-        action_penalty = torch.sum(self.actions ** 2, dim = -1) * self.action_penalty
+        action_penalty = torch.sum(act ** 2, dim = -1) * self.action_penalty
 
         # self.rew_buf = None
         if self.approach == 0:
